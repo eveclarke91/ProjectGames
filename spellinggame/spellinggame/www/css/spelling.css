@@ -1,0 +1,28 @@
+.drag-box{
+    float:left;
+    background-color: #ddd;
+    height: 50px;
+    width: 50px;
+    margin: 10px;
+}
+.drop-box{
+    float:left;
+    background-color: #aaa;
+    height: 50px;
+    width: 50px;
+    margin: 10px;
+}
+.correct{
+    background-color: #53FF24;
+}
+.incorrect{
+    background-color: #FF2427;
+}
+.drop-panel{
+    text-align: center;
+    clear:both;
+}
+.drag-panel{
+    text-align: center;
+    clear:both;
+}

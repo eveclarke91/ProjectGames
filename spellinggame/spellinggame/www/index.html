@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <script src="js/jquery-1.11.2.min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
+
+        <script type="text/javascript">
+            var words = [
+                ["lion",
+                "img/spelling/lion.png",
+                "sound/spelling/lion.mp3"
+                ],
+                ["pig",
+                "img/spelling/pig.png",
+                "sound/spelling/pig.mp3"
+                ],
+                ["elephant",
+                "img/spelling/elephant.png",
+                "sound/spelling/elephant.mp3"
+                ]
+            ];
+            function randomizestring(string) {
+
+                var possible = "abcdefghijklmnopqrstuvwxyz";
+                for( var j=0; j < 4; j++ ){
+                    string += possible.charAt(Math.floor(Math.random() * possible.length));
+                }
+
+                var parts = string.split('');
+                for (var i = parts.length; i > 0;) {
+                    var random = parseInt(Math.random() * i);
+                    var temp = parts[--i];
+                    parts[i] = parts[random];
+                    parts[random] = temp;
+                }
+                return parts.join('');
+            };
+
+            var randomnumber = Math.floor(Math.random() * words.length);
+            var game = words[randomnumber];
+            var dragletters = game[0];
+            var dropboxes = game[0];
+            var maxcorrectlettercount = game[0].length;  
+            var correctlettercount = 0;
+
+            var score = 0;       
+
+
+            dragletters = randomizestring(dragletters);
+
+
+            $(document).ready(function() {
+
+                $("#game_image").attr("src",game[1]); // set the game image
+
+                for( var j=0; j<dragletters.length; j++){ // print all draggable boxes
+                    $('.drag-panel').append('<div class="drag-box" id="'+dragletters[j]+'"><p>'+dragletters[j].toUpperCase()+'</p></div>');
+                }
+
+                $(".drag-box").draggable({ revert: "valid" }); // make all drag boxes draggable
+
+                for( var k=0; k<dropboxes.length; k++){ // print all dropable boxes
+                    $('<div class="drop-box" accept="'+dropboxes[k]+'"><p>empty</p></div>').droppable({
+                        drop: function( event, ui ) {
+                            if( $(ui.draggable).text() == $(this).attr("accept").toUpperCase() ){
+                                $(this).addClass("correct").find("p").html($(ui.draggable).text());
+                                $(ui.draggable).css("display","none");
+                                correctlettercount = correctlettercount+1;
+                                if(correctlettercount == maxcorrectlettercount){
+                                    alert("Well Done");
+                                }
+                            }else{
+                                score = score+1;
+                                $('#score').text(score); 
+                            }                
+                          }
+                    }).appendTo( ".drop-panel" );
+                }
+
+            });            
+
+            
+            $(function() {
+                
+                /*
+                $("#drop-l").droppable({ 
+                  activeClass: "",
+                  hoverClass: "",
+                  
+                });
+                $("#drop-i").droppable({ 
+                  activeClass: "",
+                  hoverClass: "",
+                  drop: function( event, ui ) {
+                    if($(ui.draggable).text() == "I"){
+                        $(this).addClass("correct").find("p").html($(ui.draggable).text());
+                        $(ui.draggable).css("display","none");
+                    }else{
+                        score = score+1;
+                        $('#score').text(score); 
+                    }                
+                  }
+                });
+                $("#drop-o").droppable({ 
+                  activeClass: "",
+                  hoverClass: "",
+                  drop: function( event, ui ) {
+                    if($(ui.draggable).text() == "O"){
+                        $(this).addClass("correct").find("p").html($(ui.draggable).text());
+                        $(ui.draggable).css("display","none");
+                    }else{
+                        score = score+1;
+                        $('#score').text(score); 
+                    }                
+                  }
+                });
+                $("#drop-n").droppable({ 
+                  activeClass: "",
+                  hoverClass: "",
+                  drop: function( event, ui ) {
+                    if($(ui.draggable).text() == "N"){
+                        $(this).addClass("correct").find("p").html($(ui.draggable).text());
+                        $(ui.draggable).css("display","none");
+                    }else{
+                        score = score+1;
+                        $('#score').text(score); 
+                        
+                        
+
+                    }                
+                  }
+                });*/
+              });
+
+        </script>
+        <link rel="stylesheet" type="text/css" href="css/spelling.css" />
+        <title>Sample Spelling Game</title>
+    </head>
+
+    <body>
+        <div>Score = <span id="score">0</span></div>
+        <div><img id="game_image" src="img/spelling/elephant.png"></img></div>
+        <div class="drop-panel">
+        </div>
+        <div class="drag-panel">
+        </div>
+
+
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+
+    </body>
+
+
+
+</html>
+
+
