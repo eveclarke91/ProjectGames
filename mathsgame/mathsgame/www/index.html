@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <script src="js/jquery-1.11.2.min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
+
+        <script type="text/javascript">
+            var words = [
+                ["lion",
+                "img/spelling/lion.png",
+                "sound/spelling/lion.mp3"
+                ],
+                ["pig",
+                "img/spelling/pig.png",
+                "sound/spelling/pig.mp3"
+                ],
+                ["elephant",
+                "img/spelling/elephant.png",
+                "sound/spelling/elephant.mp3"
+                ]
+            ];
+
+            var randomnumber, dragletters, dropboxes, maxcorrectlettercount, correctlettercount;
+            var game_no = 0;
+            var max_game_no = 2;
+            var score = 0;
+
+            function randomizestring(string) {
+                var possible = "abcdefghijklmnopqrstuvwxyz";
+                for( var j=0; j < 4; j++ ){
+                    string += possible.charAt(Math.floor(Math.random() * possible.length));
+                }
+
+                var parts = string.split('');
+                for (var i = parts.length; i > 0;) {
+                    var random = parseInt(Math.random() * i);
+                    var temp = parts[--i];
+                    parts[i] = parts[random];
+                    parts[random] = temp;
+                }
+                return parts.join('');
+            };
+            function newGame(){
+                var randomnumber = Math.floor(Math.random() * words.length);
+                var game = words[randomnumber];
+                words.splice(randomnumber,1);
+                var dragletters = game[0];
+                var dropboxes = game[0];
+                var maxcorrectlettercount = game[0].length;  
+                var correctlettercount = 0;
+
+                var actualgameno = game_no + 1;
+                var actualmaxgameno = max_game_no + 1;
+
+                dragletters = randomizestring(dragletters);
+
+                $('.drag-panel').html("");
+                $('.drop-panel').html("");
+                $('#game_no').html(actualgameno);
+                $('#max_game_no').html(actualmaxgameno);
+
+                $("#game_image").attr("src",game[1]); // set the game image
+
+                for( var j=0; j<dragletters.length; j++){ // print all draggable boxes
+                    $('.drag-panel').append('<div class="drag-box" id="'+dragletters[j]+'"><p>'+dragletters[j].toUpperCase()+'</p></div>');
+                }
+
+                $(".drag-box").draggable({ revert: "valid" }); // make all drag boxes draggable
+
+                for( var k=0; k<dropboxes.length; k++){ // print all dropable boxes
+                    $('<div class="drop-box" accept="'+dropboxes[k]+'"><p>empty</p></div>').droppable({
+                        drop: function( event, ui ) {
+                            if( $(ui.draggable).text() == $(this).attr("accept").toUpperCase() ){
+                                $(this).addClass("correct").find("p").html($(ui.draggable).text());
+                                $(ui.draggable).css("display","none");
+                                correctlettercount = correctlettercount+1;
+                                if(correctlettercount == maxcorrectlettercount){                                    
+                                    if(game_no == max_game_no){
+                                        alert("Well Done and game over");
+                                    }else{
+                                        alert("Well Done");
+                                        game_no = game_no + 1;
+                                        newGame();  
+                                    }                                    
+                                }
+                            }else{
+                                score = score+1;
+                                $('#score').text(score); 
+                            }                
+                          }
+                    }).appendTo( ".drop-panel" );
+                }
+            }
+
+
+            function getRandomDivisor(num) {
+               var divisors = [];
+                for (i = 1; i <= num; i++) {
+                    if (num % i == 0) {
+                        divisors.push(i);
+                    }
+                }
+                
+                var randomDivisor;
+                if(divisors.length > 2){
+                    randomDivisor = getRandomNumber(2, divisors.length-1);
+                }else{
+                    randomDivisor = getRandomNumber(1, divisors.length);
+                }
+                return divisors[randomDivisor-1];
+            }
+
+            function getRandomNumber(minValue, maxValue){
+                var max = maxValue;
+                var min = minValue;
+                var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
+                return randomnumber;
+            }
+
+            function getRandomEquation(difficulty){
+               // var maxValue = 12;
+                var operator = 1;
+                var operatorString;
+                var answer;
+                var maxAddition = 12;
+                var maxSubtraction = 12;
+                var maxDivision = 12;
+                var maxMultiplication =12;
+
+                if(difficulty == 'medium'){
+                    //maxValue = 8;
+                    maxAddition = 50;
+                    maxSubtraction = 12;
+                    operator = 2;
+                }else if(difficulty == 'hard'){
+                    //maxValue = 12;
+                    maxAddition = 100;
+                    maxSubtraction = 100;
+                    maxDivision = 50;
+                    maxMultiplication = 12;
+                    operator = 4;
+                }
+
+                var element1;
+                var element2 = getRandomNumber(1, operator);
+                var element3;
+
+                if(element2 == 1){
+
+                    element1 = getRandomNumber(1, maxAddition);
+                    element3 = getRandomNumber(1, maxAddition);
+
+                    answer = element1 + element3;
+                    operatorString = '+';
+                }else if(element2 == 2){
+                    element1 = getRandomNumber(1, maxSubtraction);
+                    element3 = getRandomNumber(1, maxSubtraction);
+
+                    if(element3 > element1){
+                        var temp = element1;
+                        element1 = element3;
+                        element3 = temp;
+                    }
+                    answer = element1 - element3;
+                    operatorString = '-';
+                }else if(element2 == 3){
+                    element1 = getRandomNumber(1, maxMultiplication);
+                    element3 = getRandomNumber(1, maxMultiplication);
+
+                    answer = element1 * element3;
+                    operatorString = 'x';
+                }else if(element2 == 4){
+                    element1 = getRandomNumber(1, maxDivision);
+                    element3 = getRandomDivisor(element1);
+
+                    answer = element1 / element3;
+                    operatorString = '%';
+                }
+
+                 $('.box1').html(element1);
+                 $('.box2').html(operatorString);
+                 $('.box3').html(element3);
+                 $('.box4').html('=');
+                 $('.box5').html(answer);
+
+            }
+
+            $(document).ready(function() {
+
+                getRandomEquation('hard');
+       
+            });
+
+
+
+        </script>
+        <link rel="stylesheet" type="text/css" href="css/maths.css" />
+        <title>Sample Maths Game</title>
+    </head>
+
+    <body>
+        
+        <div class = "container center-text">
+        <div class = "mathsbox box1"> 1
+        </div>
+        <div class = "mathsbox box2"> +
+        </div>
+        <div class = "mathsbox box3"> 2
+        </div>
+        <div class = "mathsbox box4"> =
+        </div>
+        <div class = "mathsbox box5"> 3
+        </div>
+        <div class="divisors">
+
+        </div>
+
+        </div>
+
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+
+    </body>
+
+
+
+</html>
+
+
