@@ -33,10 +33,38 @@ text-align: center;
 }
 
 .mathsbox{
-float:left;
-height:150px;
-width: 150px;
-font-size:130px;
-margin:5px;
-background-color:#ccc;
+    float:left;
+    height:150px;
+    font-size:130px;
+    margin:5px;
+    background-color:#ccc;
+}
+.answerbox{
+    float:left;
+    height:150px;
+    font-size:130px;
+    margin:5px;
+    background-color:#ccc;
+}
+
+.clear {
+clear:both;
+}
+.continue{
+    font-size: 36px;
+    background-color: #eee;
+    width: 400px;
+}
+
+#myProgress {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background-color: #eee;
+}
+#myBar {
+    position: absolute;
+    width: 1%;
+    height: 100%;
+    background-color: #f5d6a4;
 }

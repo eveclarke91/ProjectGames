@@ -24,8 +24,13 @@
                 "sound/spelling/elephant.mp3"
                 ]
             ];
-            function randomizestring(string) {
 
+            var randomnumber, dragletters, dropboxes, maxcorrectlettercount, correctlettercount;
+            var game_no = 0;
+            var max_game_no = 2;
+            var score = 0;
+
+            function randomizestring(string) {
                 var possible = "abcdefghijklmnopqrstuvwxyz";
                 for( var j=0; j < 4; j++ ){
                     string += possible.charAt(Math.floor(Math.random() * possible.length));
@@ -40,21 +45,24 @@
                 }
                 return parts.join('');
             };
+            function newGame(){
+                var randomnumber = Math.floor(Math.random() * words.length);
+                var game = words[randomnumber];
+                words.splice(randomnumber,1);
+                var dragletters = game[0];
+                var dropboxes = game[0];
+                var maxcorrectlettercount = game[0].length;  
+                var correctlettercount = 0;
 
-            var randomnumber = Math.floor(Math.random() * words.length);
-            var game = words[randomnumber];
-            var dragletters = game[0];
-            var dropboxes = game[0];
-            var maxcorrectlettercount = game[0].length;  
-            var correctlettercount = 0;
+                var actualgameno = game_no + 1;
+                var actualmaxgameno = max_game_no + 1;
 
-            var score = 0;       
+                dragletters = randomizestring(dragletters);
 
-
-            dragletters = randomizestring(dragletters);
-
-
-            $(document).ready(function() {
+                $('.drag-panel').html("");
+                $('.drop-panel').html("");
+                $('#game_no').html(actualgameno);
+                $('#max_game_no').html(actualmaxgameno);
 
                 $("#game_image").attr("src",game[1]); // set the game image
 
@@ -71,8 +79,14 @@
                                 $(this).addClass("correct").find("p").html($(ui.draggable).text());
                                 $(ui.draggable).css("display","none");
                                 correctlettercount = correctlettercount+1;
-                                if(correctlettercount == maxcorrectlettercount){
-                                    alert("Well Done");
+                                if(correctlettercount == maxcorrectlettercount){                                    
+                                    if(game_no == max_game_no){
+                                        alert("Well Done and game over");
+                                    }else{
+                                        alert("Well Done");
+                                        game_no = game_no + 1;
+                                        newGame();  
+                                    }                                    
                                 }
                             }else{
                                 score = score+1;
@@ -81,68 +95,18 @@
                           }
                     }).appendTo( ".drop-panel" );
                 }
+            }
 
-            });            
-
-            
-            $(function() {
-                
-                /*
-                $("#drop-l").droppable({ 
-                  activeClass: "",
-                  hoverClass: "",
-                  
-                });
-                $("#drop-i").droppable({ 
-                  activeClass: "",
-                  hoverClass: "",
-                  drop: function( event, ui ) {
-                    if($(ui.draggable).text() == "I"){
-                        $(this).addClass("correct").find("p").html($(ui.draggable).text());
-                        $(ui.draggable).css("display","none");
-                    }else{
-                        score = score+1;
-                        $('#score').text(score); 
-                    }                
-                  }
-                });
-                $("#drop-o").droppable({ 
-                  activeClass: "",
-                  hoverClass: "",
-                  drop: function( event, ui ) {
-                    if($(ui.draggable).text() == "O"){
-                        $(this).addClass("correct").find("p").html($(ui.draggable).text());
-                        $(ui.draggable).css("display","none");
-                    }else{
-                        score = score+1;
-                        $('#score').text(score); 
-                    }                
-                  }
-                });
-                $("#drop-n").droppable({ 
-                  activeClass: "",
-                  hoverClass: "",
-                  drop: function( event, ui ) {
-                    if($(ui.draggable).text() == "N"){
-                        $(this).addClass("correct").find("p").html($(ui.draggable).text());
-                        $(ui.draggable).css("display","none");
-                    }else{
-                        score = score+1;
-                        $('#score').text(score); 
-                        
-                        
-
-                    }                
-                  }
-                });*/
-              });
-
+            $(document).ready(function() {
+                newGame();
+            });
         </script>
         <link rel="stylesheet" type="text/css" href="css/spelling.css" />
         <title>Sample Spelling Game</title>
     </head>
 
     <body>
+        <div>Game <span id="game_no"></span> of <span id="max_game_no"></span></div>
         <div>Score = <span id="score">0</span></div>
         <div><img id="game_image" src="img/spelling/elephant.png"></img></div>
         <div class="drop-panel">

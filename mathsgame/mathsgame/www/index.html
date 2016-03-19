@@ -10,93 +10,15 @@
         <script src="js/jquery-ui.min.js"></script>
 
         <script type="text/javascript">
-            var words = [
-                ["lion",
-                "img/spelling/lion.png",
-                "sound/spelling/lion.mp3"
-                ],
-                ["pig",
-                "img/spelling/pig.png",
-                "sound/spelling/pig.mp3"
-                ],
-                ["elephant",
-                "img/spelling/elephant.png",
-                "sound/spelling/elephant.mp3"
-                ]
-            ];
-
-            var randomnumber, dragletters, dropboxes, maxcorrectlettercount, correctlettercount;
-            var game_no = 0;
-            var max_game_no = 2;
+            var studentNo = "5555";
+            var gametype = "maths";
+            var difficulty = "hard";
             var score = 0;
-
-            function randomizestring(string) {
-                var possible = "abcdefghijklmnopqrstuvwxyz";
-                for( var j=0; j < 4; j++ ){
-                    string += possible.charAt(Math.floor(Math.random() * possible.length));
-                }
-
-                var parts = string.split('');
-                for (var i = parts.length; i > 0;) {
-                    var random = parseInt(Math.random() * i);
-                    var temp = parts[--i];
-                    parts[i] = parts[random];
-                    parts[random] = temp;
-                }
-                return parts.join('');
-            };
-            function newGame(){
-                var randomnumber = Math.floor(Math.random() * words.length);
-                var game = words[randomnumber];
-                words.splice(randomnumber,1);
-                var dragletters = game[0];
-                var dropboxes = game[0];
-                var maxcorrectlettercount = game[0].length;  
-                var correctlettercount = 0;
-
-                var actualgameno = game_no + 1;
-                var actualmaxgameno = max_game_no + 1;
-
-                dragletters = randomizestring(dragletters);
-
-                $('.drag-panel').html("");
-                $('.drop-panel').html("");
-                $('#game_no').html(actualgameno);
-                $('#max_game_no').html(actualmaxgameno);
-
-                $("#game_image").attr("src",game[1]); // set the game image
-
-                for( var j=0; j<dragletters.length; j++){ // print all draggable boxes
-                    $('.drag-panel').append('<div class="drag-box" id="'+dragletters[j]+'"><p>'+dragletters[j].toUpperCase()+'</p></div>');
-                }
-
-                $(".drag-box").draggable({ revert: "valid" }); // make all drag boxes draggable
-
-                for( var k=0; k<dropboxes.length; k++){ // print all dropable boxes
-                    $('<div class="drop-box" accept="'+dropboxes[k]+'"><p>empty</p></div>').droppable({
-                        drop: function( event, ui ) {
-                            if( $(ui.draggable).text() == $(this).attr("accept").toUpperCase() ){
-                                $(this).addClass("correct").find("p").html($(ui.draggable).text());
-                                $(ui.draggable).css("display","none");
-                                correctlettercount = correctlettercount+1;
-                                if(correctlettercount == maxcorrectlettercount){                                    
-                                    if(game_no == max_game_no){
-                                        alert("Well Done and game over");
-                                    }else{
-                                        alert("Well Done");
-                                        game_no = game_no + 1;
-                                        newGame();  
-                                    }                                    
-                                }
-                            }else{
-                                score = score+1;
-                                $('#score').text(score); 
-                            }                
-                          }
-                    }).appendTo( ".drop-panel" );
-                }
-            }
-
+            var wrong = 0;
+            var questionNo = 1;
+            var maxQuestionNo = 1;
+            var answer;
+            var difficutly;
 
             function getRandomDivisor(num) {
                var divisors = [];
@@ -122,11 +44,27 @@
                 return randomnumber;
             }
 
-            function getRandomEquation(difficulty){
+            function newMathsGame(dif){
+                addMathsGameContent();
+                if(questionNo>maxQuestionNo){
+                    endGameScore();
+                }
+                difficulty = dif;
+                resetAnswers();
+                var questionPercent = 100/maxQuestionNo;
+                var progress = questionPercent * questionNo;
+
+                $('#myBar').css( 'width', progress+'%' );
+
+
+                $('#questionNo').html(questionNo);
+                $('#maxQuestionNo').html(maxQuestionNo);
+                $('#score').html(score);
+                $('#wrong').html(wrong);
+
                // var maxValue = 12;
                 var operator = 1;
                 var operatorString;
-                var answer;
                 var maxAddition = 12;
                 var maxSubtraction = 12;
                 var maxDivision = 12;
@@ -173,13 +111,14 @@
                     element3 = getRandomNumber(1, maxMultiplication);
 
                     answer = element1 * element3;
-                    operatorString = 'x';
+                    operatorString = 'X';
                 }else if(element2 == 4){
                     element1 = getRandomNumber(1, maxDivision);
                     element3 = getRandomDivisor(element1);
 
                     answer = element1 / element3;
                     operatorString = '%';
+
                 }
 
                  $('.box1').html(element1);
@@ -188,12 +127,88 @@
                  $('.box4').html('=');
                  $('.box5').html(answer);
 
+                 var wrongAnswer1 = answer -1;
+                 var wrongAnswer2 = answer -2;
+                 var wrongAnswer3 = answer +3;
+
+                 var answerArray = new Array();
+                 answerArray.push(answer);
+                 answerArray.push(wrongAnswer1);
+                 answerArray.push(wrongAnswer2);
+                 answerArray.push(wrongAnswer3);
+
+
+                 for (var i = answerArray.length; i > 0;) {
+                    var random = parseInt(Math.random() * i);
+                    var temp = answerArray[--i];
+                    answerArray[i] = answerArray[random];
+                    answerArray[random] = temp;
+                }
+
+                $('.answer1').attr("answer",answerArray[0]).html(answerArray[0]);
+                $('.answer2').attr("answer",answerArray[1]).html(answerArray[1]);
+                $('.answer3').attr("answer",answerArray[2]).html(answerArray[2]);
+                $('.answer4').attr("answer",answerArray[3]).html(answerArray[3]);         
+
+            }
+
+            function correctAnswers(answer){
+                $('.answerbox').each(function () {
+                    if($(this).attr("answer") == answer){
+                        this.style.setProperty( 'background-color', '#53FF24', 'important' );
+                    }else{
+                        this.style.setProperty( 'background-color', '#FF2427', 'important' );
+                    }
+                });
+            }
+            function resetAnswers(){
+                $('.answerbox').each(function () {
+                    this.style.setProperty( 'background-color', '#eee', 'important' );
+                });
+            }
+            function endGameScore(){
+                removeContainerContent();
+                $('.container').html("<h1>Your Score</h1><h1>"+score+"</h1>");
+                $('.container').append(function() {
+                  return $("<div class='continue'>CONTINUE</div>").click(function(){
+                    questionNo = 1;
+                    newMathsGame(difficulty);
+                    //submit score with ajax
+                    //main menu
+                  });
+                });
+            }
+            function removeContainerContent(){
+                $('.container').empty();
+            }
+            function addMathsGameContent(){
+                removeContainerContent();
+                $('.container').html("<div>Question <span id='questionNo'></span> of <span id='maxQuestionNo'></span></div><div>Score = <span id='score'>0</span></div><div>Wrong = <span id='wrong'>0</span></div><div class = 'maths-container'><div class = 'mathsbox box1'> 1 </div><div class = 'mathsbox box2'> + </div><div class = 'mathsbox box3'> 2 </div><div class = 'mathsbox box4'> = </div><div class = 'mathsbox box5'> 3 </div><div class = 'clear'></div></div><div class='answers-container'><div class = 'answerbox answer1'></div><div class = 'answerbox answer2'></div><div class = 'answerbox answer3'></div><div class = 'answerbox answer4'></div><div class = 'clear'></div></div><div id='myProgress'><div id='myBar'></div></div>");
             }
 
             $(document).ready(function() {
+                
+                newMathsGame(difficulty);
 
-                getRandomEquation('hard');
-       
+                $(".answerbox").click(function(){
+                    if(answer == $(this).attr("answer")){
+                        correctAnswers(answer);
+                        setTimeout(function(){
+                            score = score + 1;
+                            questionNo = questionNo +1;
+                            newMathsGame(difficulty);
+                        }, 2000);
+                    }else{
+                        correctAnswers(answer);
+                        setTimeout(function(){
+                            wrong = wrong + 1;
+                            questionNo = questionNo +1;
+                            newMathsGame(difficulty);
+                        }, 2000);
+                    }
+                });
+
+
             });
 
 
@@ -203,23 +218,9 @@
         <title>Sample Maths Game</title>
     </head>
 
-    <body>
-        
+    <body>       
         <div class = "container center-text">
-        <div class = "mathsbox box1"> 1
-        </div>
-        <div class = "mathsbox box2"> +
-        </div>
-        <div class = "mathsbox box3"> 2
-        </div>
-        <div class = "mathsbox box4"> =
-        </div>
-        <div class = "mathsbox box5"> 3
-        </div>
-        <div class="divisors">
-
-        </div>
-
+            
         </div>
 
         <script type="text/javascript" src="js/index.js"></script>
