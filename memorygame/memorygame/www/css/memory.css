@@ -1,0 +1,100 @@
+.drag-box{
+    float:left;
+    background-color: #ddd;
+    height: 50px;
+    width: 50px;
+    margin: 10px;
+}
+.drop-box{
+    float:left;
+    background-color: #aaa;
+    height: 50px;
+    width: 50px;
+    margin: 10px;
+}
+.correct{
+    background-color: #53FF24;
+}
+.incorrect{
+    background-color: #FF2427;
+}
+.drop-panel{
+    text-align: center;
+    clear:both;
+}
+.drag-panel{
+    text-align: center;
+    clear:both;
+}
+
+.center-text{
+vertical-align: center;
+text-align: center;
+}
+
+.mathsbox{
+    float:left;
+    height:150px;
+    font-size:130px;
+    margin:5px;
+    background-color:#ccc;
+}
+.answerbox{
+    float:left;
+    height:150px;
+    font-size:130px;
+    margin:5px;
+    background-color:#ccc;
+}
+
+.clear {
+clear:both;
+}
+.continue{
+    font-size: 36px;
+    background-color: #eee;
+    width: 400px;
+}
+
+#myProgress {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background-color: #eee;
+}
+#myBar {
+    position: absolute;
+    width: 1%;
+    height: 100%;
+    background-color: #f5d6a4;
+}
+
+.card-container {
+width: 500px;
+}
+
+.card{
+height:150px;
+width: 100px;
+float:left;
+margin:5px;
+border:1px solid #111;
+}
+
+.card-back{
+background-color:#bce2f1;
+  
+}
+
+.card-front {
+background-color:#deecf2;
+
+}
+
+.card-match{
+height:150px;
+width: 100px;
+float:left;
+margin:5px;
+border:1px solid #fff;
+}

@@ -1,0 +1,299 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <script src="js/jquery-1.11.2.min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
+
+        <script type="text/javascript">
+            var studentNo = "5555";
+            var gametype = "memory";
+            var difficulty = "hard";
+            var score = 0;
+            var wrong = 0;
+            var questionNo = 1;
+            var maxQuestionNo = 1;
+            var answer;
+            var difficutly;
+
+            function getRandomDivisor(num){
+               var divisors = [];
+                for (i = 1; i <= num; i++) {
+                    if (num % i == 0) {
+                        divisors.push(i);
+                    }
+                }
+                
+                var randomDivisor;
+                if(divisors.length > 2){
+                    randomDivisor = getRandomNumber(2, divisors.length-1);
+                }else{
+                    randomDivisor = getRandomNumber(1, divisors.length);
+                }
+                return divisors[randomDivisor-1];
+            }
+            function getRandomNumber(minValue, maxValue){
+                var max = maxValue;
+                var min = minValue;
+                var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
+                return randomnumber;
+            }
+            function newMathsGame(dif){
+                addMathsGameContent();
+                if(questionNo>maxQuestionNo){
+                    endGameScore();
+                }
+                difficulty = dif;
+                resetAnswers();
+                var questionPercent = 100/maxQuestionNo;
+                var progress = questionPercent * questionNo;
+
+                $('#myBar').css( 'width', progress+'%' );
+
+
+                $('#questionNo').html(questionNo);
+                $('#maxQuestionNo').html(maxQuestionNo);
+                $('#score').html(score);
+                $('#wrong').html(wrong);
+
+               // var maxValue = 12;
+                var operator = 1;
+                var operatorString;
+                var maxAddition = 12;
+                var maxSubtraction = 12;
+                var maxDivision = 12;
+                var maxMultiplication =12;
+
+                if(difficulty == 'medium'){
+                    //maxValue = 8;
+                    maxAddition = 50;
+                    maxSubtraction = 12;
+                    operator = 2;
+                }else if(difficulty == 'hard'){
+                    //maxValue = 12;
+                    maxAddition = 100;
+                    maxSubtraction = 100;
+                    maxDivision = 50;
+                    maxMultiplication = 12;
+                    operator = 4;
+                }
+
+                var element1;
+                var element2 = getRandomNumber(1, operator);
+                var element3;
+
+                if(element2 == 1){
+
+                    element1 = getRandomNumber(1, maxAddition);
+                    element3 = getRandomNumber(1, maxAddition);
+
+                    answer = element1 + element3;
+                    operatorString = '+';
+                }else if(element2 == 2){
+                    element1 = getRandomNumber(1, maxSubtraction);
+                    element3 = getRandomNumber(1, maxSubtraction);
+
+                    if(element3 > element1){
+                        var temp = element1;
+                        element1 = element3;
+                        element3 = temp;
+                    }
+                    answer = element1 - element3;
+                    operatorString = '-';
+                }else if(element2 == 3){
+                    element1 = getRandomNumber(1, maxMultiplication);
+                    element3 = getRandomNumber(1, maxMultiplication);
+
+                    answer = element1 * element3;
+                    operatorString = 'X';
+                }else if(element2 == 4){
+                    element1 = getRandomNumber(1, maxDivision);
+                    element3 = getRandomDivisor(element1);
+
+                    answer = element1 / element3;
+                    operatorString = '%';
+
+                }
+
+                 $('.box1').html(element1);
+                 $('.box2').html(operatorString);
+                 $('.box3').html(element3);
+                 $('.box4').html('=');
+                 $('.box5').html(answer);
+
+                 var wrongAnswer1 = answer -1;
+                 var wrongAnswer2 = answer -2;
+                 var wrongAnswer3 = answer +3;
+
+                 var answerArray = new Array();
+                 answerArray.push(answer);
+                 answerArray.push(wrongAnswer1);
+                 answerArray.push(wrongAnswer2);
+                 answerArray.push(wrongAnswer3);
+
+
+                 for (var i = answerArray.length; i > 0;) {
+                    var random = parseInt(Math.random() * i);
+                    var temp = answerArray[--i];
+                    answerArray[i] = answerArray[random];
+                    answerArray[random] = temp;
+                }
+
+                $('.answer1').attr("answer",answerArray[0]).html(answerArray[0]);
+                $('.answer2').attr("answer",answerArray[1]).html(answerArray[1]);
+                $('.answer3').attr("answer",answerArray[2]).html(answerArray[2]);
+                $('.answer4').attr("answer",answerArray[3]).html(answerArray[3]); 
+
+                $('.answerbox').off('click');
+                $(".answerbox").click(function(){
+                    if(answer == $(this).attr("answer")){
+                        correctAnswers(answer);
+                        setTimeout(function(){
+                            score = score + 1;
+                            questionNo = questionNo +1;
+                            newMathsGame(difficulty);
+                        }, 2000);
+                    }else{
+                        correctAnswers(answer);
+                        setTimeout(function(){
+                            wrong = wrong + 1;
+                            questionNo = questionNo +1;
+                            newMathsGame(difficulty);
+                        }, 2000);
+                    }
+                });      
+            }
+            function correctAnswers(answer){
+                $('.answerbox').each(function () {
+                    if($(this).attr("answer") == answer){
+                        this.style.setProperty( 'background-color', '#53FF24', 'important' );
+                    }else{
+                        this.style.setProperty( 'background-color', '#FF2427', 'important' );
+                    }
+                });
+            }
+            function resetAnswers(){
+                $('.answerbox').each(function () {
+                    this.style.setProperty( 'background-color', '#eee', 'important' );
+                });
+            }
+            function endGameScore(){
+                removeContainerContent();
+                $('.container').html("<h1>Your Score</h1><h1>"+score+"</h1>");
+                $('.container').append(function() {
+                  return $("<div class='continue'>CONTINUE</div>").click(function(){
+                    questionNo = 1;
+                    newMathsGame(difficulty);
+                    //submit score with ajax
+                    //main menu
+                  });
+                });
+            }
+            function removeContainerContent(){
+
+                $('.container').empty();
+            }
+            function addMathsGameContent(){
+                removeContainerContent();
+                $('.container').html("<div>Question <span id='questionNo'></span> of <span id='maxQuestionNo'></span></div><div>Score = <span id='score'>0</span></div><div>Wrong = <span id='wrong'>0</span></div><div class = 'maths-container'><div class = 'mathsbox box1'> 1 </div><div class = 'mathsbox box2'> + </div><div class = 'mathsbox box3'> 2 </div><div class = 'mathsbox box4'> = </div><div class = 'mathsbox box5'> 3 </div><div class = 'clear'></div></div><div class='answers-container'><div class = 'answerbox answer1'></div><div class = 'answerbox answer2'></div><div class = 'answerbox answer3'></div><div class = 'answerbox answer4'></div><div class = 'clear'></div></div><div id='myProgress'><div id='myBar'></div></div>");
+            }
+            function newMemoryGame(){
+                var i=0;
+                var pair1, pair2;
+
+
+                $(".card").click(function(){
+                    
+                    
+
+                    var pairNo = $(this).attr("pair");
+                    $(this).removeClass("card-back").addClass("card-front");
+                    $(this).html("<h2>"+$(this).attr("pair")+"</h2>");
+
+
+                    if(i == 0){
+                        pair1 = pairNo;
+                    }else if(i == 1){
+                        pair2 = pairNo;
+                    }
+                    if(pair1 == pair2){
+                        //marks as pair
+                        alert('Pair Found');
+                        $('.card-front').empty();
+                        $('.card-front').removeClass("card card-front").addClass("card-match");
+
+                        setTimeout(function(){
+                            resetCards();
+                            i=0;
+                        }, 1000); 
+
+                    }else if(i>=1){
+                        setTimeout(function(){
+                            resetCards();
+                            i=0;
+                        }, 1000);
+                        
+                    }
+                    
+                     i++;
+                }); 
+
+
+            }
+            function resetCards(){
+                $('.card').removeClass("card-front").addClass("card-back");
+                $('.card').empty();
+            }
+
+            $(document).ready(function() {
+                newMemoryGame(difficulty);
+                
+                //newMathsGame(difficulty);
+
+
+
+            });
+
+        </script>
+        <link rel="stylesheet" type="text/css" href="css/memory.css" />
+        <title>Simple Memory Game</title>
+    </head>
+
+    <body>       
+        <div class = "container center-text">
+
+            <div class="card-container">
+                <div class="card card-back" pair='1'></div>
+                <div class="card card-back" pair='1'></div>
+                <div class="card card-back" pair='2'></div>
+                <div class="card card-back" pair='2'></div>
+                <div class="card card-back" pair='3'></div>
+                <div class="card card-back" pair='3'></div>
+                <div class="card card-back" pair='4'></div>
+                <div class="card card-back" pair='4'></div>
+                <div class="card card-back" pair='5'></div>
+                <div class="card card-back" pair='5'></div>
+                <div class="card card-back" pair='6'></div>
+                <div class="card card-back" pair='6'></div>
+            </div>
+
+
+            
+        </div>
+
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+
+    </body>
+
+
+
+</html>
+
+
