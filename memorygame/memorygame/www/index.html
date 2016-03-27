@@ -12,13 +12,41 @@
         <script type="text/javascript">
             var studentNo = "5555";
             var gametype = "memory";
-            var difficulty = "hard";
+            var difficulty = "hard";            
             var score = 0;
+
             var wrong = 0;
             var questionNo = 1;
-            var maxQuestionNo = 1;
+            var maxQuestionNo = 10;
             var answer;
-            var difficutly;
+
+            var maxCards = 12;
+
+            var animalCards=[
+                "img/animals/elephant.png",
+                "img/animals/lion.png",
+                "img/animals/pig.png",
+                "img/animals/zebra.png",
+                "img/animals/penguin.png",
+                "img/animals/seal.png",
+                "img/animals/monkey.png",
+                "img/animals/donkey.png",
+                "img/animals/cat.png",
+                "img/animals/chicken.png"
+            ];
+            var associativeCards=[
+            ["img/associate/ball.PNG","img/associate/racket.PNG"],
+            ["img/associate/basketball.PNG","img/associate/hoop.PNG"],
+            ["img/associate/bee.PNG","img/associate/honey.PNG"],
+            ["img/associate/bucket.PNG","img/associate/spade.PNG"],
+            ["img/associate/cake.PNG","img/associate/present.PNG"],
+            ["img/associate/can.PNG","img/associate/flower.PNG"],
+            ["img/associate/collar.PNG","img/associate/dog.PNG"],
+            ["img/associate/cow.PNG","img/associate/milk.PNG"],
+            ["img/associate/egg.PNG","img/associate/hen.PNG"],
+            ["img/associate/shoe.PNG","img/associate/sock.PNG"]
+            ];
+
 
             function getRandomDivisor(num){
                var divisors = [];
@@ -186,63 +214,119 @@
                 $('.container').html("<h1>Your Score</h1><h1>"+score+"</h1>");
                 $('.container').append(function() {
                   return $("<div class='continue'>CONTINUE</div>").click(function(){
-                    questionNo = 1;
-                    newMathsGame(difficulty);
+                    if(gametype == "memory"){
+                        newMemoryGame(difficulty);
+                    }else if(gametype == "maths"){
+                        newMathsGame(difficulty);
+                    }else if(gametype == "spelling"){
+                        newSpellingGame(difficulty);
+                    }
+                    score = 0;
+                    //newMathsGame(difficulty);
                     //submit score with ajax
                     //main menu
                   });
                 });
             }
             function removeContainerContent(){
-
                 $('.container').empty();
             }
             function addMathsGameContent(){
                 removeContainerContent();
                 $('.container').html("<div>Question <span id='questionNo'></span> of <span id='maxQuestionNo'></span></div><div>Score = <span id='score'>0</span></div><div>Wrong = <span id='wrong'>0</span></div><div class = 'maths-container'><div class = 'mathsbox box1'> 1 </div><div class = 'mathsbox box2'> + </div><div class = 'mathsbox box3'> 2 </div><div class = 'mathsbox box4'> = </div><div class = 'mathsbox box5'> 3 </div><div class = 'clear'></div></div><div class='answers-container'><div class = 'answerbox answer1'></div><div class = 'answerbox answer2'></div><div class = 'answerbox answer3'></div><div class = 'answerbox answer4'></div><div class = 'clear'></div></div><div id='myProgress'><div id='myBar'></div></div>");
             }
-            function newMemoryGame(){
+            function newMemoryGame(dif){
+                if(dif == "easy"){
+                    maxCards = 12;
+                }else if(dif == "medium"){
+                    maxCards = 20;
+                }else if(dif == "hard"){
+                    maxCards = 20;
+                }
+
+                var noOfPairs = maxCards/2;
+                var randomCards = randomCardsArray(maxCards);
                 var i=0;
+                var correctPairs = 0;
                 var pair1, pair2;
 
+                //print 
+                for(var j = 0; j<randomCards.length; j++){
+                    $('.card-container').append('<div class="card card-back" pair="'+ randomCards[j][0] +'" no="'+ randomCards[j][1] +'"></div>');
+                } 
 
-                $(".card").click(function(){
-                    
-                    
+                $(".card").click(function(){                    
 
                     var pairNo = $(this).attr("pair");
+                    var associateNo = $(this).attr("no");
                     $(this).removeClass("card-back").addClass("card-front");
-                    $(this).html("<h2>"+$(this).attr("pair")+"</h2>");
 
+                    if(dif == "hard"){
+                        $(this).html('<img src="'+associativeCards[pairNo][associateNo]+'"></img>');
+                    }else{
+                        $(this).html('<img src="'+animalCards[pairNo]+'"></img>');
+                    }
+                    
 
                     if(i == 0){
                         pair1 = pairNo;
+                        pair2 = 5000;
                     }else if(i == 1){
+                        score = score+1;
+                        $('#score').html(score);
                         pair2 = pairNo;
-                    }
-                    if(pair1 == pair2){
-                        //marks as pair
-                        alert('Pair Found');
-                        $('.card-front').empty();
-                        $('.card-front').removeClass("card card-front").addClass("card-match");
-
-                        setTimeout(function(){
-                            resetCards();
-                            i=0;
-                        }, 1000); 
-
-                    }else if(i>=1){
-                        setTimeout(function(){
-                            resetCards();
-                            i=0;
-                        }, 1000);
-                        
-                    }
-                    
-                     i++;
+                        clickBlocker('on');
+                        if(pair1 == pair2){                            
+                            setTimeout(function(){
+                                $("div[pair='"+pair1+"']").empty();
+                                $("div[pair='"+pair1+"']").removeClass("card card-front").addClass("card-match");
+                                correctPairs = correctPairs+1;                            
+                                resetCards();
+                                if(correctPairs>=Math.floor(maxCards/2)){
+                                    removeContainerContent();
+                                    endGameScore();
+                                }
+                                clickBlocker('off');                                
+                                i=0;
+                            }, 1000);
+                        }else if(i>=1){ //No Pair Found
+                            setTimeout(function(){
+                                resetCards();
+                                clickBlocker('off');
+                                i=0;
+                            }, 1000);                        
+                        }
+                    }                   
+                    i++;
                 }); 
 
 
+            }
+            function randomCardsArray(noOfCards){
+                var cardsArray = new Array(noOfCards);
+                var j = 0;
+                for (var k = 0; k < cardsArray.length; k++) {
+                    if(j == 2){
+                        j = 0;
+                    }
+                    cardsArray[k] = new Array(2);
+                    cardsArray[k] = [Math.floor(k/2),j];
+                    j++;
+                }
+                for(var l = cardsArray.length; l > 0;) {
+                    var random = parseInt(Math.random() * l);
+                    var temp = cardsArray[--l];
+                    cardsArray[l] = cardsArray[random];
+                    cardsArray[random] = temp;
+                }
+                return cardsArray;
+            }
+            function clickBlocker(status){
+                if(status == "on"){
+                    $('body').prepend( '<div id="bg"></div>' );
+                }else if(status == "off"){
+                    $('#bg').remove();
+                }
             }
             function resetCards(){
                 $('.card').removeClass("card-front").addClass("card-back");
@@ -263,22 +347,12 @@
         <title>Simple Memory Game</title>
     </head>
 
-    <body>       
+    <body>      
+        
+        
         <div class = "container center-text">
-
+            <div>Turns = <span id='score'>0</span></div>
             <div class="card-container">
-                <div class="card card-back" pair='1'></div>
-                <div class="card card-back" pair='1'></div>
-                <div class="card card-back" pair='2'></div>
-                <div class="card card-back" pair='2'></div>
-                <div class="card card-back" pair='3'></div>
-                <div class="card card-back" pair='3'></div>
-                <div class="card card-back" pair='4'></div>
-                <div class="card card-back" pair='4'></div>
-                <div class="card card-back" pair='5'></div>
-                <div class="card card-back" pair='5'></div>
-                <div class="card card-back" pair='6'></div>
-                <div class="card card-back" pair='6'></div>
             </div>
 
 

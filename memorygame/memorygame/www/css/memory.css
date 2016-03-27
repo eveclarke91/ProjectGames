@@ -81,6 +81,11 @@ margin:5px;
 border:1px solid #111;
 }
 
+.card img{
+    max-width:100%;
+    max-height:100%;
+}
+
 .card-back{
 background-color:#bce2f1;
   
@@ -97,4 +102,31 @@ width: 100px;
 float:left;
 margin:5px;
 border:1px solid #fff;
+}
+
+.card-match img{
+    max-width:100%;
+    max-height:100%;
+}
+
+#bg{
+  position: fixed;
+
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding:0;
+
+  vertical-align: middle;
+  text-align: center;
+  color:#fff;
+
+}
+#bgtext{ 
+
+    height: 50%;
+    width: 50%;
+    margin: 0 auto;
+    padding:0;
+    font-size:25px;  
 }
