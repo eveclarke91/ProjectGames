@@ -10,18 +10,21 @@
         <script src="js/jquery-ui.min.js"></script>
 
         <script type="text/javascript">
+
+        //Globals
             var studentNo = "5555";
             var gametype = "memory";
             var difficulty = "hard";            
             var score = 0;
 
+        //Maths Variables
             var wrong = 0;
             var questionNo = 1;
             var maxQuestionNo = 10;
             var answer;
 
+        //Memory Variables
             var maxCards = 12;
-
             var animalCards=[
                 "img/animals/elephant.png",
                 "img/animals/lion.png",
@@ -35,40 +38,173 @@
                 "img/animals/chicken.png"
             ];
             var associativeCards=[
-            ["img/associate/ball.PNG","img/associate/racket.PNG"],
-            ["img/associate/basketball.PNG","img/associate/hoop.PNG"],
-            ["img/associate/bee.PNG","img/associate/honey.PNG"],
-            ["img/associate/bucket.PNG","img/associate/spade.PNG"],
-            ["img/associate/cake.PNG","img/associate/present.PNG"],
-            ["img/associate/can.PNG","img/associate/flower.PNG"],
-            ["img/associate/collar.PNG","img/associate/dog.PNG"],
-            ["img/associate/cow.PNG","img/associate/milk.PNG"],
-            ["img/associate/egg.PNG","img/associate/hen.PNG"],
-            ["img/associate/shoe.PNG","img/associate/sock.PNG"]
+                ["img/associate/ball.PNG","img/associate/racket.PNG"],
+                ["img/associate/basketball.PNG","img/associate/hoop.PNG"],
+                ["img/associate/bee.PNG","img/associate/honey.PNG"],
+                ["img/associate/bucket.PNG","img/associate/spade.PNG"],
+                ["img/associate/cake.PNG","img/associate/present.PNG"],
+                ["img/associate/can.PNG","img/associate/flower.PNG"],
+                ["img/associate/collar.PNG","img/associate/dog.PNG"],
+                ["img/associate/cow.PNG","img/associate/milk.PNG"],
+                ["img/associate/egg.PNG","img/associate/hen.PNG"],
+                ["img/associate/shoe.PNG","img/associate/sock.PNG"]
             ];
 
+        //Spelling Variables
+            var easywords = [
+                ["lion",
+                "img/spelling/lion.png",
+                "sound/spelling/lion.mp3"
+                ],
+                ["pig",
+                "img/spelling/pig.png",
+                "sound/spelling/pig.mp3"
+                ],
+                ["seal",
+                "img/animals/seal.png",
+                "sound/spelling/seal.mp3"
+                ],
+                ["cat",
+                "img/animals/cat.png",
+                "sound/spelling/cat.mp3"
+                ]                
+            ];
 
-            function getRandomDivisor(num){
-               var divisors = [];
-                for (i = 1; i <= num; i++) {
-                    if (num % i == 0) {
-                        divisors.push(i);
-                    }
-                }
-                
-                var randomDivisor;
-                if(divisors.length > 2){
-                    randomDivisor = getRandomNumber(2, divisors.length-1);
-                }else{
-                    randomDivisor = getRandomNumber(1, divisors.length);
-                }
-                return divisors[randomDivisor-1];
-            }
+            var mediumwords = [ 
+                ["donkey",
+                "img/animals/donkey.png",
+                "sound/spelling/donkey.mp3"
+                ],
+                ["chicken",
+                "img/animals/chicken.png",
+                "sound/spelling/chicken.mp3"
+                ],                
+                ["monkey",
+                "img/animals/monkey.png",
+                "sound/spelling/monkey.mp3"
+                ],
+                ["zebra",
+                "img/animals/zebra.png",
+                "sound/spelling/zebra.mp3"
+                ]               
+            ];
+
+            var hardwords = [
+                ["elephant",
+                "img/spelling/elephant.png",
+                "sound/spelling/elephant.mp3"
+                ],
+                ["donkey",
+                "img/animals/donkey.png",
+                "sound/spelling/donkey.mp3"
+                ],
+                ["chicken",
+                "img/animals/chicken.png",
+                "sound/spelling/chicken.mp3"
+                ],
+                ["penguin",
+                "img/animals/penguin.png",
+                "sound/spelling/penguin.mp3"
+                ],
+                ["monkey",
+                "img/animals/monkey.png",
+                "sound/spelling/monkey.mp3"
+                ]              
+            ];
+
+            var randomnumber, dragletters, dropboxes, maxcorrectlettercount, correctlettercount, words;
+            var game_no = 0;
+            var max_game_no = 2;
+
+        //Core Functions
             function getRandomNumber(minValue, maxValue){
                 var max = maxValue;
                 var min = minValue;
                 var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
                 return randomnumber;
+            }
+            function endGameScore(){
+                removeContainerContent();
+                $('.container').html("<h1>Your Score</h1><h1>"+score+"</h1>");
+                $('.container').append(function() {
+                  return $("<div class='continue'>CONTINUE</div>").click(function(){
+                    gameMenu();
+                    score = 0;
+                    //submit score with ajax
+                    //main menu
+                  });
+                });
+            }
+            function removeContainerContent(){
+                $('.container').empty();
+            }
+            function startPage(){
+                removeContainerContent();
+                $('.container').html("<h1>You've been schooled!</h1><div id= 'start'>Play</div>");
+                $('#start').click(function(){
+                    gameMenu();
+                }); 
+            }
+            function gameMenu(){
+                removeContainerContent();
+                $('.container').html('<div class = "gameButton" id = "memoryButton">Memory</div><div class = "gameButton" id= "mathsButton">Maths</div><div class = "gameButton" id = "spellingButton">Spelling</div>');
+                resetGames();
+
+                $('#memoryButton').click(function(){
+                    gametype = 'memory';
+                    difficultyMenu();
+                });
+
+                $('#mathsButton').click(function(){
+                    gametype = 'maths';
+                    difficultyMenu();
+                });
+
+                $('#spellingButton').click(function(){
+                    gametype = 'spelling';
+                    difficultyMenu();
+                });
+            }
+            function difficultyMenu(){
+                removeContainerContent();
+                $('.container').html('<div class = "difficultyButton" id = "easyButton">Easy</div><div class = "difficultyButton" id = "mediumButton">Medium</div><div class = "difficultyButton" id = "hardButton">Hard</div>');
+
+                $('#easyButton').click(function(){
+                    difficulty = 'easy';
+                    startGame();
+                });
+
+                $('#mediumButton').click(function(){
+                    difficulty = 'medium';
+                    startGame();
+                });
+
+                $('#hardButton').click(function(){
+                    difficulty = 'hard';
+                    startGame();
+                });
+            }
+            function startGame(){
+                //alert(gametype+" "+difficulty);
+                if(gametype == "memory"){
+                    newMemoryGame(difficulty);
+                }else if(gametype == "maths"){
+                    newMathsGame(difficulty);
+                }else if(gametype == "spelling"){
+                    newSpellingGame(difficulty);
+                }
+            }
+            function resetGames(){
+                game_no = 0;
+                wrong = 0;
+                questionNo = 1;
+                score = 0;
+            }
+
+        //Maths Functions
+            function addMathsGameContent(){
+                removeContainerContent();
+                $('.container').html("<div>Question <span id='questionNo'></span> of <span id='maxQuestionNo'></span></div><div>Score = <span id='score'>0</span></div><div>Wrong = <span id='wrong'>0</span></div><div class = 'maths-container'><div class = 'mathsbox box1'> 1 </div><div class = 'mathsbox box2'> + </div><div class = 'mathsbox box3'> 2 </div><div class = 'mathsbox box4'> = </div><div class = 'mathsbox box5'> 3 </div><div class = 'clear'></div></div><div class='answers-container'><div class = 'answerbox answer1'></div><div class = 'answerbox answer2'></div><div class = 'answerbox answer3'></div><div class = 'answerbox answer4'></div><div class = 'clear'></div></div><div id='myProgress'><div id='myBar'></div></div>");
             }
             function newMathsGame(dif){
                 addMathsGameContent();
@@ -195,6 +331,22 @@
                     }
                 });      
             }
+            function getRandomDivisor(num){
+               var divisors = [];
+                for (i = 1; i <= num; i++) {
+                    if (num % i == 0) {
+                        divisors.push(i);
+                    }
+                }
+                
+                var randomDivisor;
+                if(divisors.length > 2){
+                    randomDivisor = getRandomNumber(2, divisors.length-1);
+                }else{
+                    randomDivisor = getRandomNumber(1, divisors.length);
+                }
+                return divisors[randomDivisor-1];
+            }
             function correctAnswers(answer){
                 $('.answerbox').each(function () {
                     if($(this).attr("answer") == answer){
@@ -209,33 +361,15 @@
                     this.style.setProperty( 'background-color', '#eee', 'important' );
                 });
             }
-            function endGameScore(){
+            
+        //Memory Functions
+            function addMemoryGameContent(){
                 removeContainerContent();
-                $('.container').html("<h1>Your Score</h1><h1>"+score+"</h1>");
-                $('.container').append(function() {
-                  return $("<div class='continue'>CONTINUE</div>").click(function(){
-                    if(gametype == "memory"){
-                        newMemoryGame(difficulty);
-                    }else if(gametype == "maths"){
-                        newMathsGame(difficulty);
-                    }else if(gametype == "spelling"){
-                        newSpellingGame(difficulty);
-                    }
-                    score = 0;
-                    //newMathsGame(difficulty);
-                    //submit score with ajax
-                    //main menu
-                  });
-                });
-            }
-            function removeContainerContent(){
-                $('.container').empty();
-            }
-            function addMathsGameContent(){
-                removeContainerContent();
-                $('.container').html("<div>Question <span id='questionNo'></span> of <span id='maxQuestionNo'></span></div><div>Score = <span id='score'>0</span></div><div>Wrong = <span id='wrong'>0</span></div><div class = 'maths-container'><div class = 'mathsbox box1'> 1 </div><div class = 'mathsbox box2'> + </div><div class = 'mathsbox box3'> 2 </div><div class = 'mathsbox box4'> = </div><div class = 'mathsbox box5'> 3 </div><div class = 'clear'></div></div><div class='answers-container'><div class = 'answerbox answer1'></div><div class = 'answerbox answer2'></div><div class = 'answerbox answer3'></div><div class = 'answerbox answer4'></div><div class = 'clear'></div></div><div id='myProgress'><div id='myBar'></div></div>");
+                $('.container').html('<div>Turns = <span id="score">0</span></div><div class="card-container"></div>');
             }
             function newMemoryGame(dif){
+                addMemoryGameContent();
+
                 if(dif == "easy"){
                     maxCards = 12;
                 }else if(dif == "medium"){
@@ -299,8 +433,6 @@
                     }                   
                     i++;
                 }); 
-
-
             }
             function randomCardsArray(noOfCards){
                 var cardsArray = new Array(noOfCards);
@@ -333,13 +465,94 @@
                 $('.card').empty();
             }
 
+        //Spelling Functions
+            function addSpellingGameContent(){
+                removeContainerContent();
+                $('.container').html('<div>Game <span id="game_no"></span> of <span id="max_game_no"></span></div><div>Score = <span id="score">0</span></div><div><img id="game_image" src="img/spelling/elephant.png"></img></div><div class="drop-panel"></div><div class="drag-panel"></div>');
+            }
+            function randomizestring(string) {
+                var possible = "abcdefghijklmnopqrstuvwxyz";
+                for( var j=0; j < 4; j++ ){
+                    string += possible.charAt(Math.floor(Math.random() * possible.length));
+                }
+
+                var parts = string.split('');
+                for (var i = parts.length; i > 0;) {
+                    var random = parseInt(Math.random() * i);
+                    var temp = parts[--i];
+                    parts[i] = parts[random];
+                    parts[random] = temp;
+                }
+                return parts.join('');
+            };
+            function newSpellingGame(dif){
+                addSpellingGameContent();
+
+                $('#score').text(score);
+
+                if(dif == "easy" && game_no == 0){
+                    words = easywords.slice();
+                    max_game_no = 2;
+                }else if(dif == "medium" && game_no == 0){
+                    words = mediumwords.slice();
+                    max_game_no = 2;
+                }else if(dif == "hard" && game_no == 0){
+                    words = hardwords.slice();
+                    max_game_no = 2;
+                }
+
+                var randomnumber = Math.floor(Math.random() * words.length);
+
+                var game = words[randomnumber];
+                words.splice(randomnumber,1); //removes from the array so you dont get it a second time.
+                var dragletters = game[0];
+                var dropboxes = game[0];
+                var maxcorrectlettercount = game[0].length;  
+                var correctlettercount = 0;
+                var actualgameno = game_no + 1;
+                var actualmaxgameno = max_game_no + 1;
+
+                dragletters = randomizestring(dragletters);
+
+                $('.drag-panel').html("");
+                $('.drop-panel').html("");
+                $('#game_no').html(actualgameno);
+                $('#max_game_no').html(actualmaxgameno);
+
+                $("#game_image").attr("src",game[1]); // set the game image
+
+                for( var j=0; j<dragletters.length; j++){ // print all draggable boxes
+                    $('.drag-panel').append('<div class="drag-box" id="'+dragletters[j]+'"><p>'+dragletters[j].toUpperCase()+'</p></div>');
+                }
+
+                $(".drag-box").draggable({ revert: "valid" }); // make all drag boxes draggable
+
+                for( var k=0; k<dropboxes.length; k++){ // print all dropable boxes
+                    $('<div class="drop-box" accept="'+dropboxes[k]+'"><p>empty</p></div>').droppable({
+                        drop: function( event, ui ) {
+                            if( $(ui.draggable).text() == $(this).attr("accept").toUpperCase() ){
+                                $(this).addClass("correct").find("p").html($(ui.draggable).text());
+                                $(ui.draggable).css("display","none");
+                                correctlettercount = correctlettercount+1;
+                                if(correctlettercount == maxcorrectlettercount){                                    
+                                    if(game_no == max_game_no){
+                                        endGameScore();
+                                    }else{
+                                        game_no = game_no + 1;
+                                        newSpellingGame(dif);  
+                                    }                                    
+                                }
+                            }else{
+                                score = score+1;
+                                $('#score').text(score); 
+                            }                
+                          }
+                    }).appendTo( ".drop-panel" );
+                }
+            }
+
             $(document).ready(function() {
-                newMemoryGame(difficulty);
-                
-                //newMathsGame(difficulty);
-
-
-
+                startPage();
             });
 
         </script>
@@ -351,9 +564,11 @@
         
         
         <div class = "container center-text">
-            <div>Turns = <span id='score'>0</span></div>
-            <div class="card-container">
-            </div>
+
+            
+            <!-- -->
+
+            
 
 
             

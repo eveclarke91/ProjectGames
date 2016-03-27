@@ -53,7 +53,8 @@ clear:both;
 .continue{
     font-size: 36px;
     background-color: #eee;
-    width: 400px;
+    width: 50%;
+    margin: 0 auto;
 }
 
 #myProgress {
@@ -129,4 +130,27 @@ border:1px solid #fff;
     margin: 0 auto;
     padding:0;
     font-size:25px;  
+}
+#start{
+    padding:20px;
+    width:50%;
+    margin:0 auto;
+    background-color: #f33d6d;
+}
+.gameButton{
+    padding:20px;
+    width:20%;
+    margin:0 auto;
+    margin-top:5px;
+    margin-bottom: 5px;
+    background-color: #2aa44f;
+
+}
+.difficultyButton{
+    padding:20px;
+    width:20%;
+    margin:0 auto;
+    margin-top:5px;
+    margin-bottom: 5px;
+    background-color: #8998de;
 }
