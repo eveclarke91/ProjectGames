@@ -137,6 +137,27 @@ border:1px solid #fff;
     margin:0 auto;
     background-color: #f33d6d;
 }
+#wrapper{
+    margin: 0 auto;
+    margin-top: 20px;
+    
+}
+#save{
+    display: inline-block;
+    padding:20px;
+    width:20%;   
+    margin-left: 20px;
+    margin-right: 20px;
+    background-color: #CCC;
+}
+#skip{
+    display: inline-block;
+    padding:20px;
+    width:20%;
+    margin-left: 20px;
+    margin-right: 20px;
+    background-color: #555;
+}
 .gameButton{
     padding:20px;
     width:20%;

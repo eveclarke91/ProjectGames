@@ -12,9 +12,9 @@
         <script type="text/javascript">
 
         //Globals
-            var studentNo = "5555";
-            var gametype = "memory";
-            var difficulty = "hard";            
+            var studentNo = 0;
+            var gametype = "spelling";
+            var difficulty = "easy";            
             var score = 0;
 
         //Maths Variables
@@ -114,7 +114,7 @@
 
             var randomnumber, dragletters, dropboxes, maxcorrectlettercount, correctlettercount, words;
             var game_no = 0;
-            var max_game_no = 2;
+            var max_game_no = 3;
 
         //Core Functions
             function getRandomNumber(minValue, maxValue){
@@ -126,12 +126,24 @@
             function endGameScore(){
                 removeContainerContent();
                 $('.container').html("<h1>Your Score</h1><h1>"+score+"</h1>");
+                if(hasInternetConnection() && studentNo > 0){
+                    $.ajax({
+                        type: 'POST',
+                        data: { student_code: studentNo, game_type: gametype , game_difficulty: difficulty, game_score: score },
+                        url: 'http://localhost/project/submitScore.php',
+                        success: function(data){ 
+                            if(data > 0){
+                                console.log("submitted score to server");
+                            }                       
+                        }
+                    });
+                }  
+                
+
                 $('.container').append(function() {
                   return $("<div class='continue'>CONTINUE</div>").click(function(){
                     gameMenu();
                     score = 0;
-                    //submit score with ajax
-                    //main menu
                   });
                 });
             }
@@ -142,7 +154,11 @@
                 removeContainerContent();
                 $('.container').html("<h1>You've been schooled!</h1><div id= 'start'>Play</div>");
                 $('#start').click(function(){
-                    gameMenu();
+                    if(hasInternetConnection()){                        
+                        studentPage();
+                    }else{
+                        gameMenu();
+                    }                    
                 }); 
             }
             function gameMenu(){
@@ -194,13 +210,39 @@
                     newSpellingGame(difficulty);
                 }
             }
+            function studentPage(){
+                removeContainerContent();
+                $('.container').html('<h1>Enter Your Student Number</h1><form><input type="text" name="number" id="studentNo"></input></form><div id="wrapper"><div id="save">Save</div><div id="skip">Skip</div></div>');
+                $('#save').click(function(){
+                    var student = $('#studentNo').val();
+                    $.ajax({
+                        type: 'POST',
+                        data: 'data='+String(student),
+                        url: 'http://localhost/project/studentCheck.php',
+                        success: function(data){ 
+                            if(data>0){
+                                studentNo = data;
+                                gameMenu();
+                            }else{
+                                studentPage();
+                                alert("Invalid Number");
+                            }
+                        }
+                    });
+                });
+                $('#skip').click(function(){
+                    gameMenu();
+                });
+            }
             function resetGames(){
                 game_no = 0;
                 wrong = 0;
                 questionNo = 1;
                 score = 0;
             }
-
+            function hasInternetConnection(){
+                return true;
+            }
         //Maths Functions
             function addMathsGameContent(){
                 removeContainerContent();
@@ -552,7 +594,11 @@
             }
 
             $(document).ready(function() {
+
                 startPage();
+                //checkConnection();
+                //endGameScore();
+
             });
 
         </script>
@@ -566,7 +612,7 @@
         <div class = "container center-text">
 
             
-            <!-- -->
+
 
             
 
@@ -574,6 +620,7 @@
             
         </div>
 
+        
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
             app.initialize();
