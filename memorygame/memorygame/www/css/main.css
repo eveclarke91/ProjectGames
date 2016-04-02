@@ -1,3 +1,8 @@
+/*
+----------------
+CORE CSS
+----------------
+*/
 @font-face {
     font-family: 'riffic_freebold';
     src: url('../font/rifficfree-bold-webfont.eot');
@@ -20,12 +25,12 @@ body{
 }
 
 #view{
-    height: 567px;
+    /*height: 567px;
     width: 360px;
-    /*height: 752px;
-    width: 1280px;
+    height: 752px;
+    width: 1280px;*/
     height: 100%;
-    width: 100%;*/
+    width: 100%;
     overflow:auto;
     background-color: #91D0F3;
 }
@@ -63,6 +68,11 @@ h1{
     overflow: auto;
 
 }
+/*
+----------------
+MENU CSS
+----------------
+*/
 #titleText{
     margin-top: 15%;
 }
@@ -133,7 +143,11 @@ h1{
     margin-bottom: 5px;
     background-color: #8998de;
 }
-
+/*
+----------------
+MATHS CSS
+----------------
+*/
 .maths-container{
     text-align: center;
     margin:0 auto;
@@ -189,6 +203,11 @@ h1{
     width:25%;
     margin-right:20px;
 }
+/*
+----------------
+GAME OVER CSS
+----------------
+*/
 .continue{
     margin: 4% auto;
     background-color: #f2ff00;
@@ -216,6 +235,11 @@ h1{
     background-position:center;
     background-image: url('../img/star.png');
 }
+/*
+----------------
+SPELLING CSS
+----------------
+*/
 .right-gameNo{
     float: right;
     font-family: "riffic_freebold";
@@ -273,6 +297,11 @@ h1{
     border: 2px solid #eee;
     border-radius: 10px;
 }
+/*
+----------------
+MEMORY CSS
+----------------
+*/
 .memory-title{
     font-family: 'riffic_freebold';
     font-size: 50px;
@@ -332,6 +361,14 @@ h1{
     height: 50%;
     overflow: auto;
 }
+
+/*
+----------------
+RESPONSIVE CSS
+----------------
+*/
+
+
 /*
 @media only screen and (min-device-width: 320px){
     .smallImg {
@@ -348,6 +385,9 @@ h1{
     .right-wrong-box{
         font-size: 60px;
     }
+    drag-holder {
+        width: 10%;
+    }
 }
 @media only screen and (min-device-width: 640px){
     .smallImg {
@@ -355,6 +395,9 @@ h1{
     }
     .right-wrong-box{
         font-size: 80px;
+    }
+    drag-holder {
+        width: 10%;
     }
 }
 */
